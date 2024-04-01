@@ -1,0 +1,44 @@
+include "FreeFem_meshing/ARGV.idp"
+
+real hboundary = getARGV("-hb",1./20.);
+real hinside = getARGV("-hin",1./20.);
+real radiuos = getARGV("-rad",1./10.);
+border C01(theta=0,2*pi){
+x = radiuos*cos(theta);
+y = radiuos*sin(theta); 
+label = 1;} 
+
+mesh Th = buildmesh(C01(1000));
+
+
+fespace Vh(Th, P1);	
+Vh u=hinside;
+
+int NbBoundaryElements = Th.nbe;
+for (int k = 0; k < NbBoundaryElements; k++){
+	    int Vertex = Th.be(k)[0];
+	    u[][Vertex]	= hboundary;    
+	}
+	
+Th = adaptmesh(Th, u, IsMetric=1, nbvx=30000,iso=1);
+u=u;
+Th = adaptmesh(Th, u, IsMetric=1, nbvx=30000,iso=1);
+u=u;
+Th = adaptmesh(Th, u, IsMetric=1, nbvx=30000,iso=1);
+
+
+
+int[int] LabelIndex(Th.nv);
+LabelIndex = 0;
+
+NbBoundaryElements = Th.nbe;
+for (int k = 0; k < NbBoundaryElements; k++){
+       // cout << "label " << Th.be(k).label << " ";
+	    int Vertex = Th.be(k)[0];
+	    LabelIndex[Vertex] = Th.be(k).label;
+	 //   cout << Vertex << Th.be(k).label << endl;
+	}
+for (int i = 0; i < Th.nv; i++)	
+cout << Th(i).x << " " << Th(i).y << " " 
+				<< LabelIndex[i] << endl;	
+	
