@@ -1,0 +1,3 @@
+g++ -I eigen/ -std=c++11 -Wall -c "%f" -lmpfr -lgmp -fopenmp -lpthread
+g++ -I eigen/ -std=c++11 -Wall -o "%e" "%f"  -lmpfr -lgmp -fopenmp -lpthread
+cppcheck --language=c++ --enable=warning,style --template=gcc "%f"
